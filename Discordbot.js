@@ -58,7 +58,21 @@ client.on("message", function(msg) {
         db.run(`INSERT INTO bannedwords (word) VALUES ("${msg.content.split(' ')[1]}")`);
         msg.reply("Successfully added `" + msg.content.split(' ')[1] + "` to the banned word list.");
     };
+
+    if (args[0].toLowerCase() === "unmute"){
+      let user = msg.mentions.users.first();
+      db.all(`SELECT uid, username, infractions FROM infractions WHERE uid = ${user.id}`, function(err, rows) { 
+        db.run(`UPDATE infractions SET infractions = ${0} WHERE uid = ${user.id}`)
+        console.log(`User ${user.username}(${user.id}) exists. Updated infractions to ${0}.`);
+        msg.reply(`Unmuted ${user.username} (${user.id}).`);
+        user = msg.guild.member(user);
+            user.roles
+              .remove(config.mutedRole)
+              .catch(console.error);
+      })
+    };
   }
+  
 
 
   // Add Rolecheck for Mods, Admin etc..  
