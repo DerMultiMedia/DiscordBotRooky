@@ -4,7 +4,6 @@ const Discord = require('discord.js');
 const config = require ('./config.json');
 const prefix = require('discord-prefix');
 
-
 // Start Discord client
 const client = new Discord.Client();
 
@@ -20,8 +19,8 @@ const defaultPrefix = '!';
 // Banned words
 let bannedWords = [];
 
-// Fetch banned words from database and insert into array
-setInterval(function() {
+// Fetch banned words from database and insert into array every second
+setInterval(() => {
   db.all('SELECT * FROM bannedwords', [], (err, rows) => {
     if (err)
       console.log("Error: " + err);
@@ -39,7 +38,7 @@ client.on('ready', () => {
 });
 
 // Discord Message event
-client.on("message", function(msg) {
+client.on("message", msg => {
   if (!msg.guild) return;
   if (msg.author.bot) return;
 
@@ -59,21 +58,44 @@ client.on("message", function(msg) {
         msg.reply("Successfully added `" + msg.content.split(' ')[1] + "` to the banned word list.");
     };
 
+    // Command : unmute User
     if (args[0].toLowerCase() === "unmute"){
       let user = msg.mentions.users.first();
-      db.all(`SELECT uid, username, infractions FROM infractions WHERE uid = ${user.id}`, function(err, rows) { 
-        db.run(`UPDATE infractions SET infractions = ${0} WHERE uid = ${user.id}`)
-        console.log(`User ${user.username}(${user.id}) exists. Updated infractions to ${0}.`);
-        msg.reply(`Unmuted ${user.username} (${user.id}).`);
-        user = msg.guild.member(user);
-            user.roles
-              .remove(config.mutedRole)
-              .catch(console.error);
-      })
+      db.all(`SELECT uid, username, infractions FROM infractions WHERE uid = ${user.id}`, function(err, rows) {
+        rows.forEach((row) => {
+          // Setting infractions to 0
+          db.run(`UPDATE infractions SET infractions = 0 WHERE uid = ${row.uid}`);
+
+          // Logging to console
+          console.log(`User ${user.username}(${user.id}) exists. Updated infractions to 0.`);
+
+          // Replying success message to discord
+          msg.reply(`User <@${row.uid}> has been unmuted.`);
+
+          // Removing muted role
+          user = msg.guild.member(user);
+          user.roles
+          .remove(config.mutedRole)
+          .catch(console.error);
+        });
+      });
     };
   }
-  
 
+  let args = msg.content.slice(guildPrefix.length).split(' ');
+  // Remove Word from bannedWord List
+  if(args[0].toLowerCase() === "removeword"){
+    db.all(`SELECT word FROM bannedwords WHERE word = ("${msg.content.split(' ')[1]}")`, (err, rows) => {
+      if (!rows.length == 0) {
+        db.run(`DELETE FROM bannedwords WHERE word = ("${msg.content.split(' ')[1]}")`);
+        let word = "`"+msg.content.split(' ')[1]+"`"
+        msg.reply(`${word} has been successfully removed from the banned words list.`);
+      } else {
+        let word = "`"+msg.content.split(' ')[1]+"`"
+        msg.reply(`${word} couldn't be removed as it's not in the banned words list.`);
+      }
+    });
+  }
 
   // Add Rolecheck for Mods, Admin etc..  
   if (msg.member.roles.cache.some(role => role.name === 'cool') || msg.member.roles.cache.some(role => role.name === "new role")) return;
@@ -109,7 +131,7 @@ client.on("message", function(msg) {
               .catch(console.error);
           } else {
             // Reply to user
-            msg.reply(`please refrain from asking for features. (Warning #${infractions})`)
+            msg.reply(`please refrain from asking for features. (Warning #${infractions +1})`)
             .then(msg => console.log(`Replied to ${msg.author.username}`));
           }
         });
@@ -122,6 +144,4 @@ client.on("message", function(msg) {
   }
 });
 
-
-
-// Antispam, Unmute user on command (role.remove()) and reset infractions,   
+// Any Ideas?
