@@ -1,5 +1,5 @@
 {
-    "token": "ODY3MDY2MDY5MDc2NTQxNDUx.YPbsNA.3q0DvzcJgShT_nh3Iqml7GVKIeo",
-    "mutedRole": "867428812915474443",
+    "token": "Your Bot Token",
+    "mutedRole": "Muted Role ID",
     "db": "./infractions.sqlite3"
 }
