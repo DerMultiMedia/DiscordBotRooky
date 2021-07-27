@@ -1,5 +1,9 @@
 {
-    "token": "Your Bot Token",
-    "mutedRole": "Muted Role ID",
-    "db": "./infractions.sqlite3"
+    "token": "Your_Bot_Token_Here",
+    "mutedRole": "MutedRoleID",
+    "db": "./infractions.sqlite3",
+    "registeredRole": "RegisteredRole",
+    "guild": "ServerID",
+    "channelName":"logs",
+    "prefix": "!"
 }
