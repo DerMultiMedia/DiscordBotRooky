@@ -1,9 +1,21 @@
 {
-    "token": "Your_Bot_Token_Here",
-    "mutedRole": "MutedRoleID",
+    "token": "TOKEN",
+    "mutedRole": "ROLEID",
     "db": "./infractions.sqlite3",
-    "registeredRole": "RegisteredRole",
-    "guild": "ServerID",
+    "registeredRole": "ROLEID",
+    "guild": "SERVERID",
     "channelName":"logs",
-    "prefix": "!"
+    "channelID": "CHANNELID",
+    "prefix": "!",
+    "excludedChannels": [
+        "CHANNEL1",
+        "Channel2",
+        "Channel3",
+        "Channel4"
+    ],
+    "excludedRoles": [
+        "Admin",
+        "Moderator",
+        "cool"
+    ]
 }
